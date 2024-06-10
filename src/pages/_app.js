@@ -1,6 +1,7 @@
 // _app.js
 
-import { AuthProvider } from "../context/AuthContext";
+import Navbar from "@/components/Navbar";
+import { AuthProvider, useAuth } from "../context/AuthContext"; // Import useAuth hook
 import "../globals.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

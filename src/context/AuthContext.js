@@ -1,52 +1,62 @@
-// src/context/AuthContext.js
+// AuthContext.js
 
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import axios from "axios";
 import { useRouter } from "next/router";
+import Navbar from "@/components/Navbar";
 
-// Create the context
 const AuthContext = createContext();
 
-// Create a custom hook to use the auth context
 export const useAuth = () => {
   return useContext(AuthContext);
 };
 
-// Create the AuthProvider component
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
   const router = useRouter();
 
-  // Method to log in the user
-  const login = (userData) => {
-    // Perform authentication logic (e.g., validate credentials)
-    // Set the user state if authentication is successful
-    setUser(userData);
-  };
+  const [token, setToken] = useState(null);
+  const [loading, setLoading] = useState(true); // Add loading state
 
-  // Method to log out the user
-  const logout = () => {
-    // Perform logout logic (e.g., clear user session)
-    // Clear the user state
-    setUser(null);
-  };
-
-  // Check if user is authenticated on initial render
   useEffect(() => {
-    // Logic to check user authentication status (e.g., from cookies/local storage)
-    // For demonstration purposes, assume user is not authenticated initially
-    const isAuthenticated = false;
-
-    // Redirect to register page if user is not authenticated
-    if (!isAuthenticated) {
-      router.push("/register");
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) {
+      setToken(storedToken);
     }
+    setLoading(false); // Update loading state once token is set
   }, []);
 
-  // Add other authentication-related methods as needed
+  const api = axios.create({
+    baseURL: process.env.NEXT_PUBLIC_SERVER_URL, // Set your API base URL here
+  });
+
+  api.interceptors.request.use(
+    (config) => {
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
+
+  const login = (token) => {
+    setToken(token);
+    localStorage.setItem("token", token);
+  };
+
+  const logout = () => {
+    setToken(null);
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    router.push("/"); // Adjust the path as needed
+  };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
-      {children}
+    <AuthContext.Provider value={{ token, login, logout, api }}>
+      <Navbar token={token} />
+      {!loading && children} {/* Render children only when loading is false */}
     </AuthContext.Provider>
   );
 };

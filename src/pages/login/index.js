@@ -8,9 +8,7 @@ import Login from "@/components/LoginComponent";
 import Register from "@/components/Register";
 import LoginComponent from "@/components/LoginComponent";
 
-const RegisterPage = () => {
-  
-
+const LoginPage = () => {
   return (
     <section className="h-screen flex justify-center">
       <div className="container h-full px-6 py-24">
@@ -23,7 +21,7 @@ const RegisterPage = () => {
             />
           </div>
           <div className="w-full md:w-8/12 lg:ms-6 lg:w-5/12">
-            <Register/>
+            <LoginComponent></LoginComponent>
           </div>
         </div>
       </div>
@@ -31,4 +29,4 @@ const RegisterPage = () => {
   );
 };
 
-export default RegisterPage;
+export default LoginPage;
